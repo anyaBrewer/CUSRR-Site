@@ -6,10 +6,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Sidebar — Mini Collapse (Icons Only)</title>
 
-<link rel="stylesheet" href="{{ url_for('static', filename='assets/css/soft-design-system.min.css') }}">
-<link rel="stylesheet" href="{{ url_for('static', filename='sidebar.css') }}">
-<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
- 
+  <link rel="stylesheet" href="{{ url_for('static', filename='assets/css/soft-design-system.min.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='sidebar.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
   <!-- Include shared sidebar -->
@@ -21,6 +20,11 @@
     {% endblock %}
   </main>
 
-<script src="{{ url_for('static', filename='assets/js/soft-design-system.min.js') }}"></script>
+  <!-- Core JS -->
+  <script src="{{ url_for('static', filename='assets/js/soft-design-system.min.js') }}"></script>
+
+  <!-- Page-specific JS -->
+  {% block scripts %}
+  {% endblock %}
 </body>
 </html>
