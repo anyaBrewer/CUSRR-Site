@@ -37,8 +37,6 @@ def schedule():
 def attendees():
     return render_template('organizer.html')
 
-
-
 @app.route('/blitz_page')
 def blitz_page():
     return render_template('blitz_page.html')
