@@ -47,7 +47,8 @@ class User(db.Model):
             "lastname": self.lastname,
             "email": self.email,
             "activity": self.activity,
-            "presentation": self.presentation.title if self.presentation else None
+            "presentation": self.presentation.title if self.presentation else None,
+            "presentation_id" : self.presentation_id
         }
 
     def to_dict_basic(self):
