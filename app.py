@@ -37,6 +37,20 @@ def schedule():
 def attendees():
     return render_template('organizer.html')
 
+
+
+@app.route('/blitz_page')
+def blitz_page():
+    return render_template('blitz_page.html')
+
+@app.route('/presentation_page')
+def presentation_page():
+    return render_template('presentation_page.html')
+
+@app.route('/poster_page')
+def poster_page():
+    return render_template('poster_page.html')
+
 if __name__ == '__main__':
     with app.app_context():
         db.create_all()
