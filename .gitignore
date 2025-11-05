@@ -1,2 +1,20 @@
 # Ignore environment variables
 .env
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+env/
+venv/
+
+# SQLite database
+app.db
+
+# Flask instance folder (if you have one)
+instance/
+
+# IDE / OS specific files
+.vscode/
+.idea/
+.DS_Store

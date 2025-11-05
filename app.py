@@ -5,6 +5,11 @@ import auth
 import requests
 from authlib.jose.errors import InvalidClaimError
 from dotenv import load_dotenv
+from models import db
+from routes.users import users_bp
+from routes.presentations import presentations_bp
+from seed import seed_data
+from config import Config
 
 load_dotenv()
 
@@ -22,6 +27,12 @@ def login_required(f):
         return f(*args, **kwargs)
     return decorated_function
 
+app.config.from_object(Config)
+db.init_app(app)
+
+app.register_blueprint(users_bp, url_prefix="/routes/users")
+app.register_blueprint(presentations_bp, url_prefix="/routes/presentations")
+
 @app.route('/')
 def program():
     return render_template('organizer.html')
@@ -30,9 +41,21 @@ def program():
 def organizer():
     return render_template('organizer.html')
 
+@app.route('/dashboard')
+def dashboard():
+    return render_template('dashboard.html')
+
+@app.route('/abstractGrader')
+def abstractGrader():
+    return render_template('abstractGrader.html')
+
 @app.route('/schedule')
 def schedule():
     return render_template('organizer.html')
+
+@app.route('/organizer-user-status')
+def organizer_user_status():
+    return render_template('organizer-user-status.html')
 
 @app.route('/attendees')
 def attendees():
@@ -128,6 +151,22 @@ def me():
         'picture': user.get('picture')
     })
 
+@app.route('/blitz_page')
+def blitz_page():
+    return render_template('blitz_page.html')
+
+@app.route('/presentation_page')
+def presentation_page():
+    return render_template('presentation_page.html')
+
+@app.route('/poster_page')
+def poster_page():
+    return render_template('poster_page.html')
 
 if __name__ == '__main__':
+    with app.app_context():
+        db.create_all()
+        from models import User
+        if User.query.count() == 0:
+            seed_data()
     app.run(debug=True)

@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block title %}Poster Page{% endblock %}
+{% block content %}
+
+<h3 class="mt-5 mb-3 d-flex align-items-center justify-content-between">
+    <span>Past Posters</span>
+</h3>
+
+<h3 class="mt-5 mb-3 d-flex align-items-center justify-content-between">
+    <span>Upcoming Posters</span>
+</h3>
+  
+  <div id="upcoming-container" class="vstack gap-3">
+  </div>
+  {% endblock %}
+
+  {% block scripts %}
+    {{ super() }}
+    <script src="{{ url_for('static', filename='js/upcoming.js') }}"></script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='js/style.css') }}">
+  {% endblock %}
