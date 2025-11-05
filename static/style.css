@@ -5,3 +5,99 @@
     opacity: 0.5;
   }
 
+/* Horizontal scroll for Program strip */
+@media (max-width: 991.98px) {
+  .program-cards .hscroll-mask { overflow-x: hidden; }
+
+  .program-cards .scroll-row {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scroll-snap-type: x mandatory;
+    gap: 1rem;
+    padding: 0 1rem .25rem;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+  }
+
+  .program-cards .scroll-row > .col {
+    flex: 0 0 50vw;   
+    max-width: 50vw;
+    scroll-snap-align: start;
+  }
+}
+
+/* Words on top of images */
+.program-cards .card-image { position: relative; overflow: hidden; }
+.program-cards .card-overlay {
+  position: absolute; left: 0; right: 0; bottom: 0;
+  padding: 1rem;
+  background: linear-gradient(to top, rgba(0,0,0,.7), rgba(0,0,0,0));
+  color: #fff;
+}
+.program-cards .overlay-title { margin: 0; font-weight: 600; font-size: 1.1rem; }
+.program-cards .overlay-subtitle { margin: 0; font-size: .9rem; opacity: .9; }
+
+/* Safety net for the page */
+html, body { overflow-x: hidden; }
+
+
+/* .modal-content { box-shadow: 0 8px 30px rgba(0,0,0,.18); border: none; }
+.rounded-top-4 { border-top-left-radius: 1rem; border-top-right-radius: 1rem; }
+.upcoming-card { transition: transform .06s ease, box-shadow .06s ease; }
+.upcoming-card:hover { transform: translateY(-1px); box-shadow: 0 .25rem .8rem rgba(0,0,0,.06); } */
+
+/* Container */
+.session-modal { border-radius: 24px; overflow: hidden; }
+
+/* Hero area */
+.session-hero {
+  --hero-top: #f2eef7;
+  --hero-bottom: #ece7f1;
+  background: linear-gradient(180deg, var(--hero-top), var(--hero-bottom));
+  position: relative;
+}
+
+.hero-blobs {
+  position: absolute;
+  right: 8%;
+  top: 22%;
+  width: 160px;
+  height: auto;
+  opacity: .18;
+  fill: currentColor;
+  color: #7b6aa5; /* tint for blobs */
+  pointer-events: none;
+}
+
+/* Thumb image in hero */
+.session-thumb { width: 88px; height: 88px; object-fit: cover; }
+
+/* Typographic scale */
+.session-time {
+  font-size: clamp(1rem, 1.2rem + 0.5vw, 1.4rem);
+  font-weight: 700;
+  line-height: 1.1;
+}
+.session-location { font-size: .95rem; }
+
+.session-title {
+  font-weight: 700;
+  font-size: clamp(1.125rem, 1rem + 0.8vw, 1.5rem);
+}
+
+.session-authors { font-size: .95rem; }
+
+/* Abstract area (when lots of text) */
+.session-body { max-height: 55vh; overflow: auto; }
+.session-abstract { font-size: 1rem; line-height: 1.6; }
+
+/* Rounded corners & subtle shadow */
+.modal-content.session-modal { box-shadow: 0 10px 30px rgba(20, 16, 40, .15); }
+
+/* Make it comfy on small screens */
+@media (max-width: 576px) {
+  .hero-blobs { width: 120px; top: 18%; right: 4%; }
+  .session-thumb { display: none !important; }
+}
+
