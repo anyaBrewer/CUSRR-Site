@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+
+{% block title %}Sign Up{% endblock %}
+
+{% block content %}
+<div class="row g-4">
+
+  <!-- Right Column -->
+   <!-- Input Information -->
+      <div class="row text-center py-3 mt-3">
+  <div id = "signup-container" class="col-4 mx-auto">
+    <h4 class="mb-4">Sign Up</h4>
+    <label for="first-name" class="form-label text-start w-100">First Name</label>
+    <input id="first-name" type="text" placeholder="First Name" class="form-control" > 
+    <label for="last-name" class="form-label text-start w-100 mt-3">Last Name</label>
+    <input id="last-name" type="text" placeholder="Last Name" class="form-control" >
+    <label for="activity" class="form-label text-start w-100 mt-3">Activity</label>
+    <select id="activity" class="form-select" aria-label="Activity select">
+      <option selected>Select your activity</option>
+      <option value="1">Attendee</option>
+      <option value="2">Presenter</option>
+      <option value="3">Organizer</option>
+    </select>
+
+    <button id="signup-submit" class="btn btn-primary mt-4">Submit</button>
+
+  </div>
+</div>
+  
+</div>
+
+<!-- SortableJS -->
+<script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
+
+{% endblock %}
+{% block scripts %}
+  {{ super() }}
+  <script src="{{ url_for('static', filename='js/signup.js') }}"></script>
+{% endblock %}

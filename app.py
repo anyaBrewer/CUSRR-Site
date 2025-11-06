@@ -10,6 +10,7 @@ from routes.users import users_bp
 from routes.presentations import presentations_bp
 from seed import seed_data
 from config import Config
+from models import User
 
 load_dotenv()
 
@@ -131,7 +132,16 @@ def google_auth():
         user_info = {'error': 'token_exchange_failed', 'detail': str(e), 'token_resp': locals().get('token_json')}
 
     session['user'] = user_info
-    return redirect(url_for('program'))
+    # Check if user exists in DB
+    email = user_info.get('email')
+    db_user = User.query.filter_by(email=email).first()
+
+    if db_user:
+        # User exists, redirect to dashboard
+        return redirect(url_for('dashboard'))
+    else:
+        # User doesn't exist, redirect to signup page
+        return redirect(url_for('signup'))
 
 @app.route('/google/logout')
 def google_logout():
@@ -144,11 +154,18 @@ def me():
     user = session.get('user')
     if not user:
         return jsonify({'authenticated': False}), 401
+
+    email = user.get('email')
+    db_user = User.query.filter_by(email=email).first()  # check if account exists
+    print(bool(db_user))
+
     return jsonify({
         'authenticated': True,
         'name': user.get('name'),
-        'email': user.get('email'),
-        'picture': user.get('picture')
+        'email': email,
+        'picture': user.get('picture'),
+        'account_exists': bool(db_user),  # True if user exists in DB
+        'user_id': db_user.id if db_user else None  # optionally include the DB id
     })
 
 @app.route('/blitz_page')
@@ -162,6 +179,14 @@ def presentation_page():
 @app.route('/poster_page')
 def poster_page():
     return render_template('poster_page.html')
+
+@app.route('/signup')
+def signup():
+    return render_template('signup.html')
+
+@app.route('/profile')
+def profile():
+    return render_template('dashboard.html')
 
 if __name__ == '__main__':
     with app.app_context():

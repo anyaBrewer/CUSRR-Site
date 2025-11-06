@@ -28,11 +28,25 @@
       loginBtn.style.display = '';
       if (logoutBtn) logoutBtn.style.display = 'none';
       if (profileBtn) profileBtn.remove();  // 👈 remove the entire profile button
+      //if (signupBtn) signupBtn.remove();
       return;
     }
 
+    
+
+    
+  
+
     const data = await resp.json();
     if (data && data.authenticated) {
+
+      //update profile location:
+    if (data.account_exists) {
+      profileBtn.href = profileBtn.dataset.profileUrl;
+    } else {
+      profileBtn.href = profileBtn.dataset.signupUrl;
+    }
+
       // Hide login, show logout
       loginBtn.style.display = 'none';
       if (logoutBtn) logoutBtn.style.display = '';
