@@ -16,77 +16,96 @@
   }
 
   function buildCard(pres, index) {
-    const card = document.createElement('div');
-    card.className = 'card shadow-xs border-0 rounded-4 upcoming-card';
-    card.role = 'button';
+  const card = document.createElement('div');
+  card.className = 'card shadow-xs border-0 rounded-4 upcoming-card';
+  card.role = 'button';
 
-    // Data for modal
-    card.dataset.title    = pres.title    || 'Untitled';
-    card.dataset.time     = formatTimeMaybe(pres.time);
-    card.dataset.location = pres.location || '';
-    card.dataset.authors  = pres.authors  || '';
-    card.dataset.abstract = pres.abstract || '';
-    card.dataset.img      = pres.image_url || DEFAULT_IMG;
+  // Data for modal
+  card.dataset.title      = pres.title || 'Untitled';
+  card.dataset.time       = formatTimeMaybe(pres.time);
+  card.dataset.room   = pres.room || '';        
+  card.dataset.abstract   = pres.abstract || '';
+  card.dataset.img        = pres.image_url || DEFAULT_IMG;
+  card.dataset.subject    = pres.subject || '';
+  card.dataset.type       = pres.type || '';
+  card.dataset.presenters = JSON.stringify(pres.presenters || []); 
 
-    const timeDisplay = card.dataset.time || '';
+  const timeDisplay = card.dataset.time || '';
 
-    card.innerHTML = `
-      <div class="card-body py-3">
-        <div class="d-flex align-items-start gap-3">
-          <img src="${card.dataset.img}"
-               alt="thumb" class="rounded-3" style="width:56px;height:56px;object-fit:cover;">
-          <div class="flex-grow-1">
-            <div class="d-flex justify-content-between align-items-start">
-              <h6 class="mb-1">${(pres.type || 'Presentation')}: ${card.dataset.title}</h6>
-              <div class="d-flex align-items-center">
-                <span class="badge bg-gray-100 text-secondary me-2">${timeDisplay}</span>
-                <div class="dropdown">
-                  <button type="button"
-                          class="btn btn-sm btn-link text-secondary px-2 mb-0"
-                          id="upcMenu${index+1}"
-                          data-bs-toggle="dropdown"
-                          aria-expanded="false"
-                          aria-haspopup="true">⋮</button>
-                  <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="upcMenu${index+1}">
-                    <li><a class="dropdown-item" href="#">View</a></li>
-                    <li><a class="dropdown-item" href="#">Add to calendar</a></li>
-                    <li><hr class="dropdown-divider"></li>
-                    <li><a class="dropdown-item text-danger" href="#">Remove</a></li>
-                  </ul>
-                </div>
+  card.innerHTML = `
+    <div class="card-body py-3">
+      <div class="d-flex align-items-start gap-3">
+        <img src="${card.dataset.img}"
+             alt="thumb" class="rounded-3" style="width:56px;height:56px;object-fit:cover;">
+        <div class="flex-grow-1">
+          <div class="d-flex justify-content-between align-items-start">
+            <h6 class="mb-1">${(pres.type || 'Presentation')}: ${card.dataset.title}</h6>
+            <div class="d-flex align-items-center">
+              <span class="badge bg-gray-100 text-secondary me-2">${timeDisplay}</span>
+              <div class="dropdown">
+                <button type="button"
+                        class="btn btn-sm btn-link text-secondary px-2 mb-0"
+                        id="upcMenu${index+1}"
+                        data-bs-toggle="dropdown"
+                        aria-expanded="false"
+                        aria-haspopup="true">⋮</button>
+                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="upcMenu${index+1}">
+                  <li><a class="dropdown-item" href="#">View</a></li>
+                  <li><a class="dropdown-item" href="#">Add to calendar</a></li>
+                  <li><hr class="dropdown-divider"></li>
+                  <li><a class="dropdown-item text-danger" href="#">Remove</a></li>
+                </ul>
               </div>
             </div>
-            <p class="text-sm text-secondary mb-0">
-              ${
-                pres.abstract
-                  ? (pres.abstract.length > 100 ? pres.abstract.slice(0, 100) + '…' : pres.abstract)
-                  : ''
-              }
-            </p>
           </div>
+          <p class="text-sm text-secondary mb-0">
+            ${
+              pres.abstract
+                ? (pres.abstract.length > 100 ? pres.abstract.slice(0, 100) + '…' : pres.abstract)
+                : ''
+            }
+          </p>
         </div>
       </div>
-    `;
-    return card;
+    </div>
+  `;
+  return card;
+}
+
+function fillAndShowModal(cardEl) {
+  const m = document.getElementById('sessionModal');
+  if (!m) return;
+
+  m.querySelector('#mTitle').textContent    = cardEl.dataset.title    || '';
+  m.querySelector('#mTime').textContent     = cardEl.dataset.time     || '';
+  m.querySelector('#mRoom').textContent = cardEl.dataset.room || '';
+  m.querySelector('#mAbstract').textContent = cardEl.dataset.abstract || '';
+  m.querySelector('#mSubject').textContent  = cardEl.dataset.subject  || '';
+  m.querySelector('#mType').textContent     = cardEl.dataset.type     || '';
+
+  // Presenters can be stored as JSON in data-presenters
+  const presentersEl = m.querySelector('#mPresenters');
+  if (cardEl.dataset.presenters) {
+    try {
+      const presenters = JSON.parse(cardEl.dataset.presenters);
+      presentersEl.innerHTML = presenters.map(p => 
+        `${p.firstname} ${p.lastname} (${p.email}${p.activity ? ', ' + p.activity : ''})`
+      ).join('<br>');
+    } catch {
+      presentersEl.textContent = cardEl.dataset.presenters;
+    }
+  } else {
+    presentersEl.textContent = '';
   }
 
-  function fillAndShowModal(cardEl) {
-    const m = document.getElementById('sessionModal');
-    if (!m) return;
+  const img = m.querySelector('#mImg');
+  if (cardEl.dataset.img) { img.src = cardEl.dataset.img; img.classList.remove('d-none'); }
+  else { img.classList.add('d-none'); }
 
-    m.querySelector('#mTitle').textContent    = cardEl.dataset.title    || '';
-    m.querySelector('#mTime').textContent     = cardEl.dataset.time     || '';
-    m.querySelector('#mLocation').textContent = cardEl.dataset.location || '';
-    m.querySelector('#mAuthors').textContent  = cardEl.dataset.authors  || '';
-    m.querySelector('#mAbstract').textContent = cardEl.dataset.abstract || '';
+  const modal = bootstrap.Modal.getOrCreateInstance(m, { backdrop: true });
+  modal.show();
+}
 
-    const img = m.querySelector('#mImg');
-    if (cardEl.dataset.img) { img.src = cardEl.dataset.img; img.classList.remove('d-none'); }
-    else { img.classList.add('d-none'); }
-
-    const modal = bootstrap.Modal.getOrCreateInstance(m, { backdrop: true });
-    modal.show();
-  }
 
   async function loadRecentPresentations() {
     const container = document.getElementById('upcoming-container');
