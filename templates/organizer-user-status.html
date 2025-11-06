@@ -4,65 +4,54 @@
 
 {% block content %}
 <div class="row g-4">
-  
-  <!-- Left Column: Schedule -->
 
-<div id="user-container" class="vstack gap-3 col-12 col-lg-8">
-   
-    <div class="row text-center py-2">
-  <div class="col-4 mx-auto">
-    <ul class="pagination pagination-primary m-4">
-      <li class="page-item">
-        <a class="page-link" href="javascript:;" aria-label="Previous">
-          <span aria-hidden="true"><i class="fa fa-angle-double-left" aria-hidden="true"></i></span>
-        </a>
-      </li>
-      <li class="page-item active">
-        <a class="page-link" href="javascript:;">1</a>
-      </li>
-      <li class="page-item">
-        <a class="page-link" href="javascript:;">2</a>
-      </li>
-      <li class="page-item">
-        <a class="page-link" href="javascript:;">3</a>
-      </li>
-      <li class="page-item">
-        <a class="page-link" href="javascript:;">4</a>
-      </li>
-      <li class="page-item">
-        <a class="page-link" href="javascript:;">5</a>
-      </li>
-      <li class="page-item">
-        <a class="page-link" href="javascript:;" aria-label="Next">
-          <span aria-hidden="true"><i class="fa fa-angle-double-right" aria-hidden="true"></i></span>
-        </a>
-      </li>
-    </ul>
+  <!-- Left Column -->
+  <div class="col-12 col-lg-8 d-flex flex-column" style="min-height: 100vh;">
+    <div id="user-container" class="flex-grow-1 vstack gap-3">
+    </div>
+
+    <!-- Bottom Section: Pagination -->
+    <div class="text-center py-3 border-top mt-auto bg-light">
+      <ul class="pagination justify-content-center mb-0">
+        <li class="page-item">
+          <a class="page-link" href="#" aria-label="Previous">
+            <span aria-hidden="true"><i class="fa fa-angle-double-left"></i></span>
+          </a>
+        </li>
+        <li class="page-item active"><a class="page-link" href="#">1</a></li>
+        <li class="page-item"><a class="page-link" href="#">2</a></li>
+        <li class="page-item"><a class="page-link" href="#">3</a></li>
+        <li class="page-item"><a class="page-link" href="#">4</a></li>
+        <li class="page-item"><a class="page-link" href="#">5</a></li>
+        <li class="page-item">
+          <a class="page-link" href="#" aria-label="Next">
+            <span aria-hidden="true"><i class="fa fa-angle-double-right"></i></span>
+          </a>
+        </li>
+      </ul>
+    </div>
   </div>
-</div>
-
-  
-</div>
 
   <!-- Right Column -->
   <div class="col-12 col-lg-4">
     <h3 class="mb-3">Search Users</h3>
     <div class="mb-3">
-  <input
-    type="text"
-    id="user-filter"
-    class="form-control"
-    placeholder="Filter users by name or email..."
-  >
-</div>
-
+      <input
+        type="text"
+        id="user-filter"
+        class="form-control"
+        placeholder="Filter users by name or email..."
+      >
+    </div>
+    <div id="user-search-results"></div>
+  </div>
 
 </div>
 
 <!-- SortableJS -->
 <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
-
 {% endblock %}
+
 {% block scripts %}
   {{ super() }}
   <script src="{{ url_for('static', filename='js/user-status.js') }}"></script>

@@ -101,3 +101,8 @@ html, body { overflow-x: hidden; }
   .session-thumb { display: none !important; }
 }
 
+#user-container table.table-bordered,
+#user-container table.table-bordered th,
+#user-container table.table-bordered td {
+  border: 1px solid black !important;
+}

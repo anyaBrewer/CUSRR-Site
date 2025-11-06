@@ -32,16 +32,18 @@ function renderTable(users) {
     return;
   }
 
+  
+
   // Clear container
   container.innerHTML = '';
 
   // Create table element
   const table = document.createElement('table');
-  table.className = 'table table-hover align-middle mb-0';
+  table.className = 'table table-hover table-bordered align-middle mb-0';
 
   // Build table header
   table.innerHTML = `
-    <thead class="table-light">
+    <thead class="table table-striped table-hover align-middle">
       <tr>
         <th>#</th>
         <th>Name</th>
