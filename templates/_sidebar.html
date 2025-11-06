@@ -12,7 +12,9 @@
         <span class="label">Sign in with Google</span>
       </a>
       
-      <a class="btn btn-outline-secondary mb-4 nav-link card text-center border " href="#profile">
+      <a id = "profile-btn" class="btn btn-outline-secondary mb-4 nav-link card text-center border " href="{{ url_for('signup') }}" 
+      data-signup-url="{{ url_for('signup') }}"
+      data-profile-url="{{ url_for('profile') }}">
         <img id="user-pic"
                src=""
                alt="User avatar"
@@ -31,10 +33,10 @@
       <img class="icon-img" src="{{ url_for('static', filename='icons/dashboard.svg') }}" alt="" aria-hidden="true">
       <span class="label">Dashboard</span>
     </a>
-    <a class="btn btn-outline-secondary mb-2 nav-link" href="{{ url_for('signup') }}">
+    <!-- <a id = "signup-btn" class="btn btn-outline-secondary mb-2 nav-link" href="{{ url_for('signup') }}">
       <img class="icon-img" src="{{ url_for('static', filename='icons/dashboard.svg') }}" alt="" aria-hidden="true">
-      <span class="label">Sign Up</span>
-    </a>
+      <span class="label">Profile</span>
+    </a> -->
     
     <div class="mt-3 mb-2 text-uppercase text-xs opacity-6" style="padding-left:6px;">Abstract Grader</div>
     <a class="btn btn-outline-secondary mb-2 nav-link" href="abstractGrader"  rel="noopener">
