@@ -20,8 +20,8 @@ def get_user(id):
 def create_user():
     data = request.get_json()
     new_user = User(
-        first_name=data['first_name'],
-        last_name=data['last_name'],
+        firstname=data['firstname'],
+        lastname=data['lastname'],
         email=data['email'],
         activity=data.get('activity'),
         presentation_id=data.get('presentation_id')
@@ -35,8 +35,8 @@ def create_user():
 def update_user(id):
     user = User.query.get_or_404(id)
     data = request.get_json()
-    user.first_name = data.get('first_name', user.first_name)
-    user.last_name = data.get('last_name', user.last_name)
+    user.firstname = data.get('firstname', user.firstname)
+    user.lastname = data.get('lastname', user.lastname)
     user.email = data.get('email', user.email)
     user.activity = data.get('activity', user.activity)
     user.presentation_id = data.get('presentation_id', user.presentation_id)
