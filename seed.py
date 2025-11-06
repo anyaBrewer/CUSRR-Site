@@ -5,10 +5,10 @@ def seed_data():
 
     # --- Presentations ---
     p1 = Presentation(
-        title="AI in Education",
+        title="If this presentation is showing something is broken",
         abstract="Exploring how AI is transforming learning.",
         subject="Artificial Intelligence",
-        time="2026-11-05 10:00",
+        time="2024-11-05 10:00",
         room="Room A",
         type="Blitz"
     )

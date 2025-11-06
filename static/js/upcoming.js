@@ -110,7 +110,7 @@
       }
 
       container.innerHTML = '';
-      presentations.forEach((pres, idx) => {
+      presentations.slice(0, 5).forEach((pres, idx) => {
         const card = buildCard(pres, idx);
         container.appendChild(card);
       });
