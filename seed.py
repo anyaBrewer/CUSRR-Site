@@ -8,7 +8,7 @@ def seed_data():
         title="AI in Education",
         abstract="Exploring how AI is transforming learning.",
         subject="Artificial Intelligence",
-        time="2025-11-05 10:00",
+        time="2026-11-05 10:00",
         room="Room A",
         type="Blitz"
     )
@@ -17,7 +17,7 @@ def seed_data():
         title="Climate Change and Policy",
         abstract="A discussion on environmental policy.",
         subject="Environmental Studies",
-        time="2025-11-05 13:00",
+        time="2026-11-05 13:00",
         room="Room B",
         type="Poster"
     )
@@ -26,7 +26,7 @@ def seed_data():
         title="Modern Web Security",
         abstract="Best practices for securing web applications.",
         subject="Cybersecurity",
-        time="2025-11-06 09:30",
+        time="2026-11-06 09:30",
         room="Room C",
         type="Presentation"
     )
@@ -35,7 +35,7 @@ def seed_data():
         title="Advances in Quantum Computing",
         abstract="An overview of quantum breakthroughs and their implications.",
         subject="Computer Science",
-        time="2025-11-06 11:00",
+        time="2026-11-06 11:00",
         room="Room D",
         type="Blitz"
     )
@@ -44,7 +44,7 @@ def seed_data():
         title="Renewable Energy Storage",
         abstract="Comparing modern battery technologies and hydrogen storage.",
         subject="Energy Engineering",
-        time="2025-11-06 14:00",
+        time="2026-11-06 14:00",
         room="Room E",
         type="Poster"
     )
@@ -53,7 +53,7 @@ def seed_data():
         title="Inclusive Design in Technology",
         abstract="How inclusive design improves digital accessibility.",
         subject="Human-Computer Interaction",
-        time="2025-11-07 09:00",
+        time="2026-11-07 09:00",
         room="Room F",
         type="Presentation"
     )
@@ -62,7 +62,7 @@ def seed_data():
         title="Neuroscience of Decision Making",
         abstract="Exploring brain processes behind human decisions.",
         subject="Neuroscience",
-        time="2025-11-07 11:30",
+        time="2026-11-07 11:30",
         room="Room G",
         type="Blitz"
     )
@@ -71,7 +71,7 @@ def seed_data():
         title="Ethics of Artificial Intelligence",
         abstract="A philosophical and policy discussion on AI ethics.",
         subject="Philosophy",
-        time="2025-11-07 13:30",
+        time="2026-11-07 13:30",
         room="Room H",
         type="Presentation"
     )
@@ -80,7 +80,7 @@ def seed_data():
         title="Ocean Plastic Solutions",
         abstract="Innovations to reduce plastic waste in our oceans.",
         subject="Marine Biology",
-        time="2025-11-08 10:00",
+        time="2026-11-08 10:00",
         room="Room I",
         type="Poster"
     )
