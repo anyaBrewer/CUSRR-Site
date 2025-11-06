@@ -1,5 +1,3 @@
-Sure — here’s the full **`README.md`** file content, ready to copy directly into your repository:
-
 ---
 
 ```markdown
@@ -208,10 +206,3 @@ Include your full Sprint 3 report (Google Doc) with:
 * References / AI use documentation
 
 📂 Upload the completed report to your group’s **Google Drive → Group_Sprint_3 directory.**
-
-```
-
----
-
-Would you like me to customize the README for your **specific app topic** (e.g., fitness tracker, study planner, booking app, etc.)? I can adjust the schema, feature list, and screenshots section accordingly.
-```
