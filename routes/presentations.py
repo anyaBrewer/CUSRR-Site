@@ -1,6 +1,7 @@
 from flask import Blueprint, jsonify, request
 from models import db, Presentation
 from datetime import datetime
+from sqlalchemy.exc import IntegrityError
 
 presentations_bp = Blueprint('presentations', __name__)
 
@@ -20,39 +21,77 @@ def get_presentation(id):
 @presentations_bp.route('/', methods=['POST'])
 def create_presentation():
     data = request.get_json()
-    new_presentation = Presentation(
-        title=data['title'],
-        abstract=data.get('abstract'),
-        subject=data.get('subject'),
-        time=data.get('time'),
-        room=data.get('room'),
-        type=data.get('type')
-    )
-    db.session.add(new_presentation)
-    db.session.commit()
-    return jsonify(new_presentation.to_dict()), 201
+    if not data:
+        return jsonify({"error": "No JSON data provided"}), 400
+    
+    # Validate required field
+    if 'title' not in data or not data['title']:
+        return jsonify({"error": "Missing required field: title"}), 400
+    
+    # Parse time if provided
+    time_obj = None
+    if data.get('time'):
+        try:
+            # Try parsing ISO format datetime string
+            time_obj = datetime.fromisoformat(data['time'].replace('Z', '+00:00'))
+        except (ValueError, AttributeError):
+            return jsonify({"error": "Invalid time format. Use ISO 8601 format"}), 400
+    
+    try:
+        new_presentation = Presentation(
+            title=data['title'],
+            abstract=data.get('abstract'),
+            subject=data.get('subject'),
+            time=time_obj,
+            room=data.get('room'),
+            type=data.get('type')
+        )
+        db.session.add(new_presentation)
+        db.session.commit()
+        return jsonify(new_presentation.to_dict()), 201
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({"error": "Failed to create presentation", "detail": str(e)}), 500
 
 # PUT update presentation
 @presentations_bp.route('/<int:id>', methods=['PUT'])
 def update_presentation(id):
     presentation = Presentation.query.get_or_404(id)
     data = request.get_json()
-    presentation.title = data.get('title', presentation.title)
-    presentation.abstract = data.get('abstract', presentation.abstract)
-    presentation.subject = data.get('subject', presentation.subject)
-    presentation.time = data.get('time', presentation.time)
-    presentation.room = data.get('room', presentation.room)
-    presentation.type = data.get('type', presentation.type)
-    db.session.commit()
-    return jsonify(presentation.to_dict())
+    if not data:
+        return jsonify({"error": "No JSON data provided"}), 400
+    
+    # Parse time if provided
+    if 'time' in data and data['time']:
+        try:
+            time_obj = datetime.fromisoformat(data['time'].replace('Z', '+00:00'))
+            presentation.time = time_obj
+        except (ValueError, AttributeError):
+            return jsonify({"error": "Invalid time format. Use ISO 8601 format"}), 400
+    
+    try:
+        presentation.title = data.get('title', presentation.title)
+        presentation.abstract = data.get('abstract', presentation.abstract)
+        presentation.subject = data.get('subject', presentation.subject)
+        presentation.room = data.get('room', presentation.room)
+        presentation.type = data.get('type', presentation.type)
+        db.session.commit()
+        return jsonify(presentation.to_dict())
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({"error": "Failed to update presentation", "detail": str(e)}), 500
 
 # DELETE presentation
 @presentations_bp.route('/<int:id>', methods=['DELETE'])
 def delete_presentation(id):
     presentation = Presentation.query.get_or_404(id)
-    db.session.delete(presentation)
-    db.session.commit()
-    return jsonify({"message": "Presentation deleted"})
+    try:
+        db.session.delete(presentation)
+        db.session.commit()
+        return jsonify({"message": "Presentation deleted"})
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({"error": "Failed to delete presentation", "detail": str(e)}), 500
 
 @presentations_bp.route('/recent', methods=['GET'])
 def get_recent_presentations():

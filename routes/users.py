@@ -1,5 +1,6 @@
 from flask import Blueprint, jsonify, request
 from models import db, User
+from sqlalchemy.exc import IntegrityError
 
 users_bp = Blueprint('users', __name__)
 
@@ -19,35 +20,86 @@ def get_user(id):
 @users_bp.route('/', methods=['POST'])
 def create_user():
     data = request.get_json()
-    new_user = User(
-        firstname=data['firstname'],
-        lastname=data['lastname'],
-        email=data['email'],
-        activity=data.get('activity'),
-        presentation_id=data.get('presentation_id')
-    )
-    db.session.add(new_user)
-    db.session.commit()
-    return jsonify(new_user.to_dict()), 201
+    if not data:
+        return jsonify({"error": "No JSON data provided"}), 400
+    
+    # Validate required fields
+    required_fields = ['firstname', 'lastname', 'email']
+    for field in required_fields:
+        if field not in data or not data[field]:
+            return jsonify({"error": f"Missing required field: {field}"}), 400
+    
+    # Validate email format (basic check)
+    email = data['email']
+    if '@' not in email or '.' not in email:
+        return jsonify({"error": "Invalid email format"}), 400
+    
+    # Check for duplicate email
+    existing_user = User.query.filter_by(email=email).first()
+    if existing_user:
+        return jsonify({"error": "User with this email already exists"}), 409
+    
+    try:
+        new_user = User(
+            firstname=data['firstname'],
+            lastname=data['lastname'],
+            email=email,
+            activity=data.get('activity'),
+            presentation_id=data.get('presentation_id')
+        )
+        db.session.add(new_user)
+        db.session.commit()
+        return jsonify(new_user.to_dict()), 201
+    except IntegrityError as e:
+        db.session.rollback()
+        return jsonify({"error": "Database integrity error", "detail": str(e)}), 400
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({"error": "Failed to create user", "detail": str(e)}), 500
 
 # PUT update user
 @users_bp.route('/<int:id>', methods=['PUT'])
 def update_user(id):
     user = User.query.get_or_404(id)
     data = request.get_json()
-    user.firstname = data.get('firstname', user.firstname)
-    user.lastname = data.get('lastname', user.lastname)
-    user.email = data.get('email', user.email)
-    user.activity = data.get('activity', user.activity)
-    user.presentation_id = data.get('presentation_id', user.presentation_id)
-    db.session.commit()
-    return jsonify(user.to_dict())
+    if not data:
+        return jsonify({"error": "No JSON data provided"}), 400
+    
+    # Validate email format if provided
+    if 'email' in data and data['email']:
+        email = data['email']
+        if '@' not in email or '.' not in email:
+            return jsonify({"error": "Invalid email format"}), 400
+        
+        # Check for duplicate email (excluding current user)
+        existing_user = User.query.filter_by(email=email).filter(User.id != id).first()
+        if existing_user:
+            return jsonify({"error": "User with this email already exists"}), 409
+    
+    try:
+        user.firstname = data.get('firstname', user.firstname)
+        user.lastname = data.get('lastname', user.lastname)
+        user.email = data.get('email', user.email)
+        user.activity = data.get('activity', user.activity)
+        user.presentation_id = data.get('presentation_id', user.presentation_id)
+        db.session.commit()
+        return jsonify(user.to_dict())
+    except IntegrityError as e:
+        db.session.rollback()
+        return jsonify({"error": "Database integrity error", "detail": str(e)}), 400
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({"error": "Failed to update user", "detail": str(e)}), 500
 
 
 # DELETE user
 @users_bp.route('/<int:id>', methods=['DELETE'])
 def delete_user(id):
     user = User.query.get_or_404(id)
-    db.session.delete(user)
-    db.session.commit()
-    return jsonify({"message": "User deleted"})
+    try:
+        db.session.delete(user)
+        db.session.commit()
+        return jsonify({"message": "User deleted"})
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({"error": "Failed to delete user", "detail": str(e)}), 500
