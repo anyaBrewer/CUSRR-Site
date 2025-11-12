@@ -175,11 +175,11 @@ def seed_data():
 
     # --- Users ---
     users = [
-        User(firstname="Alice", lastname="Johnson", email="alice@example.com", presentation_id=p1.id, activity="Speaker"),
-        User(firstname="Bob", lastname="Smith", email="bob@example.com", presentation_id=p1.id, activity="Co-presenter"),
-        User(firstname="Catherine", lastname="Lee", email="catherine@example.com", presentation_id=p2.id, activity="Moderator"),
-        User(firstname="Daniel", lastname="Patel", email="daniel@example.com", presentation_id=p3.id, activity="Instructor"),
-        User(firstname="Ella", lastname="Martinez", email="ella@example.com", presentation_id=p3.id, activity="Assistant"),
+        User(firstname="Alice", lastname="Johnson", email="alice@example.com", presentation_id=p1.id, activity="Speaker", auth="organizer"),
+        User(firstname="Bob", lastname="Smith", email="bob@example.com", presentation_id=p1.id, activity="Co-presenter", auth="abstract grader"),
+        User(firstname="Catherine", lastname="Lee", email="catherine@example.com", presentation_id=p2.id, activity="Moderator", auth="attendee"),
+        User(firstname="Daniel", lastname="Patel", email="daniel@example.com", presentation_id=p3.id, activity="Instructor", auth="attendee"),
+        User(firstname="Ella", lastname="Martinez", email="ella@example.com", presentation_id=p3.id, activity="Assistant", auth="attendee"),
 
         User(firstname="Frank", lastname="Nguyen", email="frank@example.com", presentation_id=p4.id, activity="Speaker"),
         User(firstname="Grace", lastname="Wong", email="grace@example.com", presentation_id=p4.id, activity="Researcher"),

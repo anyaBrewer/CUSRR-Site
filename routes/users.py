@@ -25,7 +25,7 @@ def create_user():
         email=data['email'],
         activity=data.get('activity'),
         presentation_id=data.get('presentation_id'),
-        auth=['presenter']
+        auth=data.get('auth')
     )
     db.session.add(new_user)
     db.session.commit()
@@ -41,7 +41,12 @@ def update_user(id):
     user.email = data.get('email', user.email)
     user.activity = data.get('activity', user.activity)
     user.presentation_id = data.get('presentation_id', user.presentation_id)
-    user.auth = data.get('auth', user.auth)
+
+    auth_val = data.get('auth', user.auth)
+    if isinstance(auth_val, list):
+        auth_val = ','.join(str(a) for a in auth_val)
+
+    user.auth = auth_val
     db.session.commit()
     return jsonify(user.to_dict())
 

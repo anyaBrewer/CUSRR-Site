@@ -3,7 +3,6 @@ from flask import session, redirect, url_for, jsonify, request
 import os
 import auth
 import requests
-from authlib.jose.errors import InvalidClaimError
 from dotenv import load_dotenv
 from models import db
 from routes.users import users_bp
@@ -11,6 +10,7 @@ from routes.presentations import presentations_bp
 from seed import seed_data
 from config import Config
 from models import User
+from functools import wraps
 
 load_dotenv()
 
@@ -21,12 +21,91 @@ app.secret_key = os.environ.get('FLASK_SECRET')
 auth.init_oauth(app)
 google = auth.oauth.create_client('google')
 
-def login_required(f):
-    def decorated_function(*args, **kwargs):
-        if 'user' not in session:
+
+def organizer_required(view):
+    @wraps(view)
+    def wrapped(*args, **kwargs):
+        user_info = session.get('user')
+        if not user_info:
             return redirect(url_for('google_login'))
-        return f(*args, **kwargs)
-    return decorated_function
+
+        email = user_info.get('email')
+        if not email:
+            return redirect(url_for('google_login'))
+
+        db_user = User.query.filter_by(email=email).first()
+        if not db_user:
+            return redirect(url_for('signup'))
+
+        if db_user.auth == 'organizer':
+            return view(*args, **kwargs)
+
+        # not permitted: return 403 for API/XHR, or redirect to dashboard
+        wants_json = request.is_json or request.headers.get('X-Requested-With') == 'XMLHttpRequest'
+        if wants_json:
+            return jsonify({'error': 'forbidden', 'reason': 'organizer_required'}), 403
+        # redirect to dashboard
+        return redirect(url_for('dashboard'))
+    return wrapped
+
+
+def abstract_grader_required(view):
+    @wraps(view)
+    def wrapped(*args, **kwargs):
+        user_info = session.get('user')
+        if not user_info:
+            return redirect(url_for('google_login'))
+
+        email = user_info.get('email')
+        if not email:
+            return redirect(url_for('google_login'))
+
+        db_user = User.query.filter_by(email=email).first()
+        if not db_user:
+            return redirect(url_for('signup'))
+
+        roles = []
+        if db_user.auth:
+            roles = [r.strip().lower() for r in str(db_user.auth).split(',') if r.strip()]
+
+        if 'organizer' in roles or 'abstract_grader' in roles:
+            return view(*args, **kwargs)
+
+        # not permitted: return 403 for API/XHR, or redirect to dashboard
+        wants_json = request.is_json or request.headers.get('X-Requested-With') == 'XMLHttpRequest'
+        if wants_json:
+            return jsonify({'error': 'forbidden', 'reason': 'abstract_grader_required'}), 403
+        return redirect(url_for('dashboard'))
+
+    return wrapped
+
+def presenter_required(view):
+    @wraps(view)
+    def wrapped(*args, **kwargs):
+        user_info = session.get('user')
+        if not user_info:
+            return redirect(url_for('google_login'))
+
+        email = user_info.get('email')
+        if not email:
+            return redirect(url_for('google_login'))
+
+        db_user = User.query.filter_by(email=email).first()
+        if not db_user:
+            return redirect(url_for('signup'))
+
+        if db_user.auth == 'presenter':
+            return view(*args, **kwargs)
+
+        # not permitted: return 403 for API/XHR, or redirect to dashboard
+        wants_json = request.is_json or request.headers.get('X-Requested-With') == 'XMLHttpRequest'
+        if wants_json:
+            return jsonify({'error': 'forbidden', 'reason': 'presenter_required'}), 403
+        # redirect to dashboard
+        return redirect(url_for('dashboard'))
+    return wrapped
+
+
 
 app.config.from_object(Config)
 db.init_app(app)
@@ -47,6 +126,7 @@ def dashboard():
     return render_template('dashboard.html')
 
 @app.route('/abstractGrader')
+@abstract_grader_required
 def abstractGrader():
     return render_template('abstractGrader.html')
 
@@ -55,6 +135,7 @@ def schedule():
     return render_template('organizer.html')
 
 @app.route('/organizer-user-status')
+@organizer_required
 def organizer_user_status():
     return render_template('organizer-user-status.html')
 
@@ -74,9 +155,6 @@ def google_auth():
 
     user_info = None
 
-    # Manually exchange the authorization code for tokens. We do this rather
-    # than calling Authlib's authorize_access_token() to avoid consuming the
-    # code in a way that prevents our fallback logic from working.
     try:
         code = request.args.get('code')
         if not code:
@@ -165,7 +243,8 @@ def me():
         'email': email,
         'picture': user.get('picture'),
         'account_exists': bool(db_user),  # True if user exists in DB
-        'user_id': db_user.id if db_user else None  # optionally include the DB id
+        'user_id': db_user.id if db_user else None,  # optionally include the DB id
+        'auth': db_user.auth if db_user else None
     })
 
 @app.route('/blitz_page')
@@ -185,6 +264,7 @@ def signup():
     return render_template('signup.html')
 
 @app.route('/profile')
+@presenter_required
 def profile():
     return render_template('profile.html')
 
