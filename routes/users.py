@@ -10,7 +10,7 @@ def get_users():
     return jsonify([u.to_dict() for u in users])
 
 # GET one user
-@users_bp.route('/', methods=['GET'])
+@users_bp.route('/<int:id>', methods=['GET'])
 def get_user(id):
     user = User.query.get_or_404(id)
     return jsonify(user.to_dict())
@@ -25,7 +25,7 @@ def create_user():
         email=data['email'],
         activity=data.get('activity'),
         presentation_id=data.get('presentation_id'),
-        auth=['presentor']
+        auth=data.get('auth')
     )
     db.session.add(new_user)
     db.session.commit()
@@ -41,7 +41,12 @@ def update_user(id):
     user.email = data.get('email', user.email)
     user.activity = data.get('activity', user.activity)
     user.presentation_id = data.get('presentation_id', user.presentation_id)
-    user.auth = data.get('auth', user.auth)
+
+    auth_val = data.get('auth', user.auth)
+    if isinstance(auth_val, list):
+        auth_val = ','.join(str(a) for a in auth_val)
+
+    user.auth = auth_val
     db.session.commit()
     return jsonify(user.to_dict())
 
