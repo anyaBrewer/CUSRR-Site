@@ -192,9 +192,6 @@ def seed_data():
         User(firstname="Mason", lastname="Harris", email="mason@example.com", presentation_id=p8.id, activity="Lecturer"),
         User(firstname="Nina", lastname="Garcia", email="nina@example.com", presentation_id=p8.id, activity="Panelist"),
         User(firstname="Owen", lastname="Davis", email="owen@example.com", presentation_id=p9.id, activity="Coordinator"),
-
-        User(firstname="Lucas", lastname="Lefebvre", email="lplefe26@colby.edu", presentation_id=1, activity="Attendee", auth ="organizer"),
-        User(firstname="Lucas", lastname="Lefebvre2", email="lucaslefebvre314@gmail.com", presentation_id=2, activity="Attendee", auth ="organizer"),
     ]
 
     db.session.add_all(users)
