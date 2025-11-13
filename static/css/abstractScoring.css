@@ -8,17 +8,18 @@
     font-family: "Comic Sans MS", cursive;
     white-space: pre-wrap;
     margin: 0;
-    padding: 20px;
+    padding:16px;    
     background: #f9f9f9;
     border: 2px solid #ccc;
     box-sizing: border-box;
-    height: 75vh;
+    height: 85vh;
     overflow: auto;
 }
 
 .review-app .review-app__panel {
     background:#fff; border:1px solid #dcdcdc; border-radius:12px; padding:16px;
     box-shadow:0 2px 10px rgba(0,0,0,0.06);
+    height: 100vh;
 }
 .review-app .review-app__title { margin:0 0 12px; font-size:1rem; }
 .review-app .review-app__label { display:block; margin:12px 0 6px; font-size:.9rem; }
