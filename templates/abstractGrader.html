@@ -7,17 +7,17 @@
 <div class="d-flex align-items-center justify-content-between flex-wrap gap-3 mb-4">
   <div>
     <h2 class="mb-1">Abstract Grader Dashboard</h2>
-    <p class="text-secondary mb-0">Review, score, and track abstracts quickly.</p>
+    <p class="text-dark mb-0">Review, score, and track abstracts quickly.</p>
   </div>
 
   <div class="d-flex align-items-center gap-3">
     <div class="input-group">
-      <span class="input-group-text bg-gray-100 text-secondary">Due</span>
-      <input type="date" class="form-control" id="dueDate">
+      <span class="input-group-text bg-gray-100 text-dark text-m">Due</span>
+      <input type="date" class="form-control " id="dueDate">
     </div>
 
     <div class="text-end">
-      <small class="text-secondary d-block" id="progressLabel">0% complete</small>
+      <large class="text-dark d-block text-m" id="progressLabel">0% complete</large>
       <div class="progress" style="width:220px;height:6px;">
         <div class="progress-bar" id="progressBar" role="progressbar" style="width:0%"></div>
       </div>
@@ -30,17 +30,17 @@
   <div class="col-12 col-lg-6">
     <div class="input-group">
       <span class="input-group-text bg-gray-100"><i class="fas fa-search"></i></span>
-      <input type="text" class="form-control" id="searchInput" placeholder="Search by abstract title or author">
+      <input type="text" class="form-control text-dark" id="searchInput" placeholder="Search by abstract title or author">
     </div>
   </div>
 
   <div class="col-12 col-lg-6">
     <div class="d-flex flex-wrap gap-2 justify-content-lg-end">
-      <button class="btn btn-sm btn-outline-secondary active" data-filter="all">All</button>
-      <button class="btn btn-sm btn-outline-secondary" data-filter="todo">To Do</button>
-      <button class="btn btn-sm btn-outline-secondary" data-filter="done">Completed</button>
+      <button class="btn btn-sm btn-outline-dark active" data-filter="all">All</button>
+      <button class="btn btn-sm btn-outline-dark" data-filter="todo">To Do</button>
+      <button class="btn btn-sm btn-outline-dark" data-filter="done">Completed</button>
       <div class="dropdown">
-        <button class="btn btn-sm btn-outline-secondary dropdown-toggle" data-bs-toggle="dropdown">Track</button>
+        <button class="btn btn-sm btn-outline-dark dropdown-toggle" data-bs-toggle="dropdown">Track</button>
         <ul class="dropdown-menu dropdown-menu-end" id="trackFilter">
           <li><a class="dropdown-item" data-track="">All</a></li>
           <li><a class="dropdown-item" data-track="Systems">Systems</a></li>
@@ -54,6 +54,7 @@
 {# Build a clean list of todos first #}
 {% set todos = abstracts|selectattr('status','equalto','todo')|list %}
 
+<!-- Essentially what we would have if database was connected... -->
 <h5 class="mt-5 mb-3">To Do</h5>
 <div class="row g-4 row-cols-1 row-cols-md-2" id="todoGrid">
   {% for a in todos %}
@@ -78,14 +79,17 @@
         <div class="flex-grow-1">
           <div class="d-flex justify-content-between align-items-start">
             <h6 class="mb-1">{{ a.title }}</h6>
-            <span class="badge bg-gray-100 text-secondary">{{ a.time_submitted or 'Just now' }}</span>
+            <span class="badge bg-gray-100 text-dark">{{ a.time_submitted or 'Just now' }}</span>
           </div>
-          <p class="text-sm text-secondary mb-1">{{ a.authors }}</p>
+          <p class="text-sm text-dark mb-1">{{ a.authors }}</p>
           <p class="text-sm mb-2">{{ a.summary }}</p>
           <div class="d-flex align-items-center gap-2">
             <span class="badge bg-info text-white">{{ a.track or 'General' }}</span>
-            <!-- Link to abstract scoring page -->
-            <a class="btn btn-sm btn-outline-info px-2" href="{{ url_for('abstractScoring') }}">Grade</a>
+            <button
+              type="button" class="btn btn-sm btn-outline-info px-2" url="{{ url_for('abstractScoring') }}">
+              Grade
+            </button>
+
           </div>
         </div>
       </div>
@@ -94,6 +98,7 @@
   {% endfor %}
 
   {% if todos|length == 0 %}
+
   {# ——— Placeholders if there are no To-Do items ——— #}
   <div class="col abstract-card" data-card data-status="todo"
        data-title="ai for ocean sensors"
@@ -183,15 +188,7 @@
 
 
 <script src="{{ url_for('static', filename='js/abstractGrader.js') }}"></script>
+<script src="{{ url_for('static', filename='css/abstractGrader.css') }}"></script>
 
-<style>
-  .opacity-85 { opacity: .85; }
-  .card .badge.bg-gray-100 { background: #f6f9fc !important; }
-  .move-on-hover:hover { transform: translateY(-2px); transition: .2s ease; }
-  .abstract-card .flex-grow-1 {
-  min-width: 0;
-}
-
-</style>
 
 {% endblock %}
