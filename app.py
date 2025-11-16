@@ -337,7 +337,7 @@ def signup():
     return render_template('signup.html')
 
 @app.route('/profile')
-@presenter_required
+# @presenter_required
 def profile():
     return render_template('profile.html')
 
