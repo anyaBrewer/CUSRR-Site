@@ -1,5 +1,4 @@
 import os
-basedir = os.path.abspath(os.path.dirname(__file__))
 
 class Config:
     SECRET_KEY = os.environ.get('FLASK_SECRET') or 'dev_secret_key'
@@ -15,3 +14,4 @@ class Config:
     SQLALCHEMY_DATABASE_URI = DATABASE_URL
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     SQLALCHEMY_ECHO = False
+
