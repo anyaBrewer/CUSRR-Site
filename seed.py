@@ -21,47 +21,47 @@ def seed_data():
         print("Schedules already exist, skipping.")
         return
 
-    # Helper for consistent date/time
-    def time_at(hour, minute=0):
-        return datetime(2025, 5, 1, hour, minute)
+    # Helper to parse string into datetime
+    def parse_time(time_str):
+        return datetime.strptime(time_str, "%Y-%m-%d %H:%M")
 
     # --- BLOCKS ---
     opening = BlockSchedule(
         title="Opening Remarks",
-        start_time=time_at(8, 30),
-        end_time=time_at(9, 0),
+        start_time=parse_time("2026-11-06 08:30"),
+        end_time=parse_time("2026-11-06 09:00"),
         location="Main Hall",
-        day="test1"
+        day="Day 1"
     )
 
     keynote = BlockSchedule(
         title="Keynote Address",
-        start_time=time_at(9, 0),
-        end_time=time_at(10, 0),
+        start_time=parse_time("2026-11-06 09:00"),
+        end_time=parse_time("2026-11-06 10:00"),
         location="Auditorium",
-        day="test1"
+        day="Day 1"
     )
 
     poster_session_1 = BlockSchedule(
         title="Poster Session I",
-        start_time=time_at(10, 15),
-        end_time=time_at(11, 0),
+        start_time=parse_time("2026-11-06 10:15"),
+        end_time=parse_time("2026-11-06 11:00"),
         location="Exhibition Hall",
-        day="test1"
+        day="Day 1"
     )
 
     lunch = BlockSchedule(
         title="Lunch Break",
-        start_time=time_at(12, 0),
-        end_time=time_at(13, 0),
+        start_time=parse_time("2026-11-06 12:00"),
+        end_time=parse_time("2026-11-06 13:00"),
         location="Courtyard",
-        day="test1"
+        day="Day 1"
     )
 
     db.session.add_all([opening, keynote, poster_session_1, lunch])
     db.session.flush()  # ensures IDs are assigned
 
-    # --- PRESENTATIONS INSIDE EACH BLOCK ---
+    # --- PRESENTATIONS ---
     opening_talk = Presentation(
         title="Opening Remarks",
         type="session",
@@ -81,7 +81,7 @@ def seed_data():
             title="AI for Environmental Modeling",
             abstract="Poster #A1 -- Jane Doe (University of X)",
             type="poster",
-            schedule_id=poster_session_1.id
+            schedule_id=poster_session_1.id,
         ),
         Presentation(
             title="Neural Nets for Wildlife Tracking",
@@ -98,39 +98,39 @@ def seed_data():
     ]
 
     db.session.add_all([opening_talk, keynote_talk] + poster_presentations)
-    db.session.flush()  # we now have presentation IDs
+    db.session.flush()
 
-    # Unpack poster presentations for clarity
+    # Unpack poster presentations
     p1, p2, p3 = poster_presentations
 
-    # --- Users tied to presentations ---
+    # --- USERS ---
     users = [
         User(firstname="Alice", lastname="Johnson", email="alice@example.com",
-             presentation_id=opening_talk.id, activity="Speaker", auth="organizer"),
+             presentation_id=opening_talk.id, activity="Rafting", auth="attendee"),
 
         User(firstname="Bob", lastname="Smith", email="bob@example.com",
-             presentation_id=opening_talk.id, activity="Co-presenter", auth="abstract grader"),
+             presentation_id=opening_talk.id, activity="Rafting", auth="abstract grader"),
 
         User(firstname="Catherine", lastname="Lee", email="catherine@example.com",
-             presentation_id=keynote_talk.id, activity="Moderator", auth="attendee"),
+             presentation_id=keynote_talk.id, activity="Rafting", auth="attendee"),
 
         User(firstname="Daniel", lastname="Patel", email="daniel@example.com",
-             presentation_id=p1.id, activity="Instructor", auth="attendee"),
+             presentation_id=p1.id, activity="Rafting", auth="attendee"),
 
         User(firstname="Ella", lastname="Martinez", email="ella@example.com",
-             presentation_id=p1.id, activity="Assistant", auth="attendee"),
+             presentation_id=p1.id, activity="Rafting", auth="attendee"),
 
         User(firstname="Frank", lastname="Nguyen", email="frank@example.com",
-             presentation_id=p2.id, activity="Speaker"),
+             presentation_id=p2.id, activity="Rafting"),
 
         User(firstname="Grace", lastname="Wong", email="grace@example.com",
-             presentation_id=p2.id, activity="Researcher"),
+             presentation_id=p2.id, activity="Rafting"),
 
         User(firstname="Hannah", lastname="Kim", email="hannah@example.com",
-             presentation_id=p3.id, activity="Presenter"),
+             presentation_id=p3.id, activity="Rafting"),
 
         User(firstname="Isaac", lastname="Reed", email="isaac@example.com",
-             presentation_id=p3.id, activity="Assistant"),
+             presentation_id=p3.id, activity="Rafting"),
     ]
 
     db.session.add_all(users)

@@ -25,7 +25,7 @@ class Presentation(db.Model):
             "title": self.title,
             "abstract": self.abstract,
             "subject": self.subject,
-            "time": self.time,
+            "time": self.time if self.time else (self.schedule.start_time if self.schedule else None),
             "room": self.schedule.location if self.schedule else None,
             "type": self.type,
             "presenters": [p.to_dict_basic() for p in self.presenters]
