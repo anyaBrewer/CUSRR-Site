@@ -11,12 +11,13 @@ class Presentation(db.Model):
     abstract = db.Column(db.Text)
     subject = db.Column(db.String(100))
     time = db.Column(DateTime)
-    room = db.Column(db.String(50))
     type = db.Column(db.String(50))
+    schedule_id = db.Column(db.Integer, db.ForeignKey('blockSchedules.id'))
 
-    presenters = db.relationship('User', back_populates='presentation', cascade='all, delete')
+    presenters = db.relationship('User', back_populates='presentation')
     grades = db.relationship('Grade', back_populates='presentation', cascade='all, delete')
     abstract_grades = db.relationship('AbstractGrade', back_populates='presentation', cascade='all, delete')
+    schedule = db.relationship('BlockSchedule', back_populates='presentations')
 
     def to_dict(self):
         return {
@@ -25,7 +26,7 @@ class Presentation(db.Model):
             "abstract": self.abstract,
             "subject": self.subject,
             "time": self.time,
-            "room": self.room,
+            "room": self.schedule.location if self.schedule else None,
             "type": self.type,
             "presenters": [p.to_dict_basic() for p in self.presenters]
         }
@@ -123,14 +124,14 @@ class AbstractGrade(db.Model):
         }
 
 class BlockSchedule(db.Model):
-    __tablename__ = "schedules"
+    __tablename__ = "blockSchedules"
 
     id = db.Column(db.Integer, primary_key=True)
     day = db.Column(db.String(20), nullable=False)
-    startTime = db.Column(DateTime, nullable=False)
-    endTime = db.Column(DateTime, nullable=False)
+    start_time = db.Column(DateTime, nullable=False)
+    end_time = db.Column(DateTime, nullable=False)
     title = db.Column(db.String(100), nullable=False)
-    description = db.Column(db.String(200))
+    description = db.Column(db.String(300))
     location = db.Column(db.String(100))
 
     presentations = db.relationship('Presentation', back_populates='schedule', cascade='save-update')
@@ -139,10 +140,10 @@ class BlockSchedule(db.Model):
         return {
             "id": self.id,
             "day": self.day,
-            "startTime": self.startTime,
-            "endTime": self.endTime,
+            "startTime": self.start_time,
+            "endTime": self.end_time,
             "title": self.title,
             "description": self.description,
             "location": self.location,
-            "length": (self.endTime - self.startTime).total_seconds() / 60
+            "length": (self.end_time - self.start_time).total_seconds() / 60
         }
