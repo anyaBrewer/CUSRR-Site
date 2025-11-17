@@ -133,6 +133,8 @@ class BlockSchedule(db.Model):
     description = db.Column(db.String(200))
     location = db.Column(db.String(100))
 
+    presentations = db.relationship('Presentation', back_populates='schedule', cascade='save-update')
+
     def to_dict(self):
         return {
             "id": self.id,
