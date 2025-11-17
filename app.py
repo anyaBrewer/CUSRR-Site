@@ -271,7 +271,6 @@ def me():
 
     email = user.get('email')
     db_user = User.query.filter_by(email=email).first()  # check if account exists
-    print(bool(db_user))
 
     return jsonify({
         'authenticated': True,
