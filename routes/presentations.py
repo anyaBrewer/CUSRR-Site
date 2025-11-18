@@ -52,8 +52,6 @@ def update_presentation(id):
     presentation.title = data.get('title', presentation.title)
     presentation.abstract = data.get('abstract', presentation.abstract)
     presentation.subject = data.get('subject', presentation.subject)
-    presentation.room = data.get('room', presentation.room)
-    presentation.type = data.get('type', presentation.type)
     db.session.commit()
     return jsonify(presentation.to_dict())
 
