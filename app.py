@@ -1,10 +1,12 @@
+from dotenv import load_dotenv
+load_dotenv()
 from flask import Flask, render_template, flash
+
 from flask import session, redirect, url_for, jsonify, request
 import os
 import auth
 import requests
-from dotenv import load_dotenv
-load_dotenv()
+
 from models import db
 from routes.users import users_bp
 from routes.presentations import presentations_bp
@@ -18,10 +20,9 @@ import csv
 from io import TextIOWrapper
 from csv_importer import import_users_from_csv
 
-
+# load_dotenv()
 
 app = Flask(__name__)
-
 
 app.secret_key = os.environ.get('FLASK_SECRET')
 
@@ -86,33 +87,6 @@ def abstract_grader_required(view):
 
     return wrapped
 
-def banned_user_redirect(view):
-    @wraps(view)
-    def wrapped(*args, **kwargs):
-        user_info = session.get('user')
-        if not user_info:
-            # If no user session, let them continue or redirect elsewhere
-            return view(*args, **kwargs)
-
-        email = user_info.get('email')
-        if not email:
-            return view(*args, **kwargs)
-
-        db_user = User.query.filter_by(email=email).first()
-        if not db_user:
-            return view(*args, **kwargs)
-
-        roles = []
-        if db_user.auth:
-            roles = [r.strip().lower() for r in str(db_user.auth).split(',') if r.strip()]
-
-        if 'banned' in roles:
-            return redirect(url_for('fizzbuzz'))
-
-        # user is not banned, continue to the original view
-        return view(*args, **kwargs)
-
-    return wrapped
 def presenter_required(view):
     @wraps(view)
     def wrapped(*args, **kwargs):
@@ -216,51 +190,34 @@ def import_csv():
 
 
 @app.route('/')
-@banned_user_redirect
 def program():
     return render_template('dashboard.html')
 
-@app.route('/fizzbuzz')
-def fizzbuzz():
-    return render_template('fizz-buzz.html')
-
 @app.route('/organizer')
-@banned_user_redirect
 def organizer():
     return render_template('organizer.html')
 
 @app.route('/dashboard')
-@banned_user_redirect
 def dashboard():
     return render_template('dashboard.html')
 
 @app.route('/abstractGrader')
-@banned_user_redirect
 @abstract_grader_required
 def abstractGrader():
     return render_template('abstractGrader.html')
 
 @app.route('/schedule')
-@banned_user_redirect
 def schedule():
     return render_template('organizer.html')
 
 @app.route('/organizer-user-status')
-@banned_user_redirect
 @organizer_required
 def organizer_user_status():
     return render_template('organizer-user-status.html')
 
 @app.route('/attendees')
-@banned_user_redirect
 def attendees():
     return render_template('organizer.html')
-
-@app.route('/organizer-presentations-status')
-@banned_user_redirect
-@organizer_required
-def organizer_presentations():
-    return render_template('organizer-presentations-status.html')
 
 
 #Authentication Routes
@@ -354,6 +311,7 @@ def me():
 
     email = user.get('email')
     db_user = User.query.filter_by(email=email).first()  # check if account exists
+    print(bool(db_user))
 
     return jsonify({
         'authenticated': True,
@@ -362,9 +320,7 @@ def me():
         'picture': user.get('picture'),
         'account_exists': bool(db_user),  # True if user exists in DB
         'user_id': db_user.id if db_user else None,  # optionally include the DB id
-        'auth': db_user.auth if db_user else None,
-        'presentation_id': db_user.presentation_id if db_user else None,
-        'activity': db_user.activity if db_user else None
+        'auth': db_user.auth if db_user else None
     })
 
 @app.route('/blitz_page')
