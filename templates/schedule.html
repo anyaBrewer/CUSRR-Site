@@ -5,21 +5,23 @@
 {% block content %}
 <div class="row g-4">
 
-  <!-- Left Column: Schedule -->
+  <!-- Left Column -->
   <div class="col-12 col-lg-8">
-    <section id="schedule">
-      <h3 class="mb-3">Schedule</h3>
 
-      {% include "_schedule-overview.html" %}
+    <!-- Day Selector -->
+    <div class="mb-3">
+      <label for="day-select" class="form-label fw-bold">Select Day</label>
+      <select id="day-select" class="form-select">
+        <option>Loading...</option>
+      </select>
+    </div>
 
-      <div id="schedule-details" class="vstack gap-3">
+    <!-- Top: Overview -->
+    <div class="row g-3 mb-4" id="schedule-overview"></div>
 
-        {% for session in sessions %}
-            {% include "_session-card.html" %}
-        {% endfor %}
+    <!-- Bottom: Full Details -->
+    <div id="schedule-details" class="vstack gap-3"></div>
 
-      </div>
-    </section>
   </div>
 
   <!-- Right Column -->
@@ -50,5 +52,8 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 </script>
 {% endif %}
+
+<!-- Your dynamic schedule logic -->
+<script src="{{ url_for('static', filename='js/schedule.js') }}"></script>
 
 {% endblock %}
