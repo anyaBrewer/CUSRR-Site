@@ -28,7 +28,8 @@ class Presentation(db.Model):
             "time": self.time if self.time else (self.schedule.start_time + self.num_in_block * self.schedule.sub_length if self.schedule and self.num_in_block is not None and self.schedule.sub_length is not None else self.schedule.start_time if self.schedule else None),
             "room": self.schedule.location if self.schedule else None,
             "type": self.schedule.block_type if self.schedule else None,
-            "presenters": [p.to_dict_basic() for p in self.presenters]
+            "presenters": [p.to_dict_basic() for p in self.presenters],
+            "schedule_id": self.schedule_id
         }
 
 class User(db.Model):

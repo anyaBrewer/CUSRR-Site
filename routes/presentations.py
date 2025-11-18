@@ -106,3 +106,15 @@ def get_presentations_by_type(category):
     )
 
     return jsonify([p.to_dict() for p in results])
+
+@presentations_bp.route("/day/<string:day>")
+def get_presentations_by_day(day):
+    blocks = BlockSchedule.query.filter_by(day=day, block_type='poster').all()
+    result = []
+    for block in blocks:
+        presentations = Presentation.query.filter_by(schedule_id=block.id).all()
+        result.append({
+            "block": block.to_dict(),
+            "presentations": [p.to_dict() for p in presentations]
+        })
+    return jsonify(result)
