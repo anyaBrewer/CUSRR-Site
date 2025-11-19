@@ -89,18 +89,20 @@ function renderDetails(sessions, detailsContainer, presentations) {
 
     // if there are presentations, render them inside the session card in a row (3 per row using col-lg-4)
     if (session_presentations.length > 0) {
-      html += `<div class="row gx-3 gy-3 mt-3">`;
+      // NOTE: add class "poster-list" so Sortable can initialize on this container
+      html += `<div class="row gx-3 gy-3 mt-3 poster-list" data-session-id="${session.id}">`;
      
 
       session_presentations.forEach((presentation, j) => {
+        // include the real presentation id so we can persist ordering
         const col = `
-             <div class="col-12 col-md-6 col-lg-4">
-        <div class="card border-0 shadow-xs rounded-4 h-100 p-3" id="poster-${session.id}-${j}">
-          <h6 class="fw-bold mb-1">${presentation.title}</h6>
-          <p class="text-sm text-secondary mb-1">${(presentation.presenters || []).map(formatPresenterName).filter(Boolean).join(", ")}</p>
-          <p class="text-sm mb-0">${presentation.abstract ? truncate(presentation.abstract, 75) : ""}</p>
-        </div>
-      </div>
+          <div class="col-12 col-md-6 col-lg-4 swappable" data-presentation-id="${presentation.id}">
+            <div class="card border-0 shadow-xs rounded-4 h-100 p-3" id="poster-${presentation.id}">
+              <h6 class="fw-bold mb-1">${presentation.title}</h6>
+              <p class="text-sm text-secondary mb-1">${(presentation.presenters || []).map(formatPresenterName).filter(Boolean).join(", ")}</p>
+              <p class="text-sm mb-0">${presentation.abstract ? truncate(presentation.abstract, 75) : ""}</p>
+            </div>
+          </div>
         `;
         html += col;
       });
@@ -110,6 +112,100 @@ function renderDetails(sessions, detailsContainer, presentations) {
 
     html += `</section>`; // close section
     detailsContainer.insertAdjacentHTML('beforeend', html);
+  }
+}
+
+// Gather current order for all poster lists and POST to API
+async function saveCurrentOrder() {
+  const lists = Array.from(document.querySelectorAll('.poster-list'));
+  const orders = [];
+  lists.forEach(list => {
+    const scheduleId = list.dataset.sessionId || list.getAttribute('data-session-id');
+    const items = Array.from(list.querySelectorAll('.swappable'));
+    items.forEach((item, idx) => {
+      const pid = item.dataset.presentationId || item.getAttribute('data-presentation-id');
+      if (pid) {
+        orders.push({
+          presentation_id: parseInt(pid, 10),
+          schedule_id: parseInt(scheduleId, 10),
+          num_in_block: idx
+        });
+      }
+    });
+  });
+
+  if (orders.length === 0) return { ok: true, message: 'No posters to save' };
+
+  try {
+    const res = await fetch('/api/v1/presentations/order', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ orders })
+    });
+    return await res.json();
+  } catch (err) {
+    console.error('Failed to save order', err);
+    throw err;
+  }
+}
+
+// Attach save button handler if present
+document.addEventListener('click', async (e) => {
+  const btn = e.target.closest && e.target.closest('#save-order-btn');
+  if (!btn) return;
+  btn.disabled = true;
+  btn.textContent = 'Saving...';
+  try {
+    const result = await saveCurrentOrder();
+    // basic feedback
+    if (result && result.ok) {
+      btn.textContent = 'Saved';
+      setTimeout(() => btn.textContent = 'Save Order', 1500);
+    } else {
+      btn.textContent = 'Save Failed';
+      console.error('Save failed', result);
+    }
+  } catch (err) {
+    btn.textContent = 'Save Error';
+  } finally {
+    btn.disabled = false;
+  }
+});
+
+// -----------------------------
+// Init Sortable for poster lists (organizers only; Sortable lib must be loaded)
+// -----------------------------
+function initSortables() {
+  if (typeof Sortable === 'undefined') return;
+  document.querySelectorAll('.poster-list').forEach(list => {
+    // avoid double-init
+    if (list._sortableInitialized) return;
+    new Sortable(list, {
+      animation: 150,
+      ghostClass: 'sortable-ghost',
+      // allow dragging by grabbing the swappable element anywhere
+      draggable: '.swappable',
+      onEnd: function (evt) {
+        // placeholder: persist order via fetch() if desired
+        console.log('Poster moved', evt);
+      }
+    });
+    list._sortableInitialized = true;
+  });
+}
+
+// -----------------------------
+// Load & Render Both Sections
+// -----------------------------
+async function loadForDay(day, overview, details) {
+  const sessions = await fetchScheduleByDay(day);
+  const presentations = await get_presentations_by_day(day);
+  renderOverview(sessions, overview);
+  renderDetails(sessions, details, presentations);
+
+  // initialize Sortable after DOM nodes are in place (only if library is present)
+  if (typeof Sortable !== 'undefined') {
+    initSortables();
   }
 }
 
@@ -141,16 +237,6 @@ async function initializeScheduleUI() {
   daySelect.addEventListener('change', () => {
     loadForDay(daySelect.value, overview, details);
   });
-}
-
-// -----------------------------
-// Load & Render Both Sections
-// -----------------------------
-async function loadForDay(day, overview, details) {
-  const sessions = await fetchScheduleByDay(day);
-  const presentations = await get_presentations_by_day(day);
-  renderOverview(sessions, overview);
-  renderDetails(sessions, details, presentations);
 }
 
 // -----------------------------

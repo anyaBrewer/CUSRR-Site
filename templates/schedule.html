@@ -11,9 +11,14 @@
     <!-- Day Selector -->
     <div class="mb-3">
       <label for="day-select" class="form-label fw-bold">Select Day</label>
-      <select id="day-select" class="form-select">
-        <option>Loading...</option>
-      </select>
+      <div class="d-flex gap-2">
+        <select id="day-select" class="form-select">
+          <option>Loading...</option>
+        </select>
+        {% if is_organizer %}
+        <button id="save-order-btn" class="btn btn-primary">Save Order</button>
+        {% endif %}
+      </div>
     </div>
 
     <!-- Top: Overview -->
@@ -38,19 +43,6 @@
 {% if is_organizer %}
 <!-- SortableJS only for organizers -->
 <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
-<script>
-document.addEventListener('DOMContentLoaded', function () {
-  const posterList = document.getElementById('poster-list');
-  if (posterList) {
-    new Sortable(posterList, {
-      animation: 150,
-      ghostClass: 'sortable-ghost',
-      handle: '.drag-handle',
-      draggable: '.swappable'
-    });
-  }
-});
-</script>
 {% endif %}
 
 <!-- Your dynamic schedule logic -->
