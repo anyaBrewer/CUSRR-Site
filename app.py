@@ -258,6 +258,7 @@ def attendees():
 
 @app.route('/organizer-presentations-status')
 @banned_user_redirect
+
 @organizer_required
 def organizer_presentations():
     return render_template('organizer-presentations-status.html')
